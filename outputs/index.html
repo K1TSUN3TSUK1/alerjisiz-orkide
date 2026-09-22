@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Senin İçin Kodladım</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --white: #fff;
+      --soft: rgba(255, 255, 255, 0.76);
+      --violet: #9f6bff;
+      --lilac: #dcbcff;
+      --pink: #ff95d1;
+      --green: #46ff8c;
+      --deep-green: #0c5e36;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #000;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    .phone {
+      position: relative;
+      width: min(100vw, 430px);
+      height: 100svh;
+      min-height: 680px;
+      max-height: 932px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 62%, rgba(126, 76, 255, 0.24), transparent 190px),
+        radial-gradient(circle at 50% 92%, rgba(45, 255, 125, 0.09), transparent 240px),
+        #000;
+      isolation: isolate;
+    }
+
+    .scan {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.018),
+        transparent
+      );
+      background-size: 100% 6px;
+      opacity: 0.26;
+      mix-blend-mode: screen;
+      z-index: 5;
+    }
+
+    .rain {
+      position: absolute;
+      inset: -120px 0 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation: rainIn 1.4s ease 3.2s forwards;
+    }
+
+    .drop {
+      position: absolute;
+      top: -90px;
+      width: 1px;
+      height: 56px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.54));
+      filter: drop-shadow(0 0 6px rgba(159, 107, 255, 0.35));
+      animation: rainFall linear infinite;
+    }
+
+    .drop:nth-child(1) { left: 5%; animation-duration: 1.15s; animation-delay: -0.4s; }
+    .drop:nth-child(2) { left: 12%; animation-duration: 1.45s; animation-delay: -1s; height: 42px; opacity: 0.55; }
+    .drop:nth-child(3) { left: 18%; animation-duration: 1.25s; animation-delay: -0.8s; }
+    .drop:nth-child(4) { left: 26%; animation-duration: 1.7s; animation-delay: -1.3s; height: 38px; opacity: 0.48; }
+    .drop:nth-child(5) { left: 33%; animation-duration: 1.28s; animation-delay: -0.2s; }
+    .drop:nth-child(6) { left: 39%; animation-duration: 1.6s; animation-delay: -1.1s; height: 48px; opacity: 0.58; }
+    .drop:nth-child(7) { left: 47%; animation-duration: 1.18s; animation-delay: -0.65s; }
+    .drop:nth-child(8) { left: 54%; animation-duration: 1.52s; animation-delay: -1.45s; height: 44px; opacity: 0.52; }
+    .drop:nth-child(9) { left: 62%; animation-duration: 1.22s; animation-delay: -0.35s; }
+    .drop:nth-child(10) { left: 69%; animation-duration: 1.68s; animation-delay: -1.2s; height: 40px; opacity: 0.5; }
+    .drop:nth-child(11) { left: 77%; animation-duration: 1.32s; animation-delay: -0.9s; }
+    .drop:nth-child(12) { left: 84%; animation-duration: 1.55s; animation-delay: -0.15s; height: 46px; opacity: 0.56; }
+    .drop:nth-child(13) { left: 91%; animation-duration: 1.2s; animation-delay: -0.72s; }
+    .drop:nth-child(14) { left: 97%; animation-duration: 1.75s; animation-delay: -1.55s; height: 36px; opacity: 0.45; }
+
+    .intro {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 36px;
+      background: #000;
+      color: var(--white);
+      text-align: center;
+      z-index: 8;
+      animation: introOut 3s ease forwards;
+    }
+
+    .heart {
+      width: 92px;
+      aspect-ratio: 1;
+      position: relative;
+      transform: rotate(-45deg) scale(0.2);
+      background: #ff6fad;
+      filter:
+        drop-shadow(0 0 18px rgba(255, 111, 173, 0.95))
+        drop-shadow(0 0 42px rgba(255, 111, 173, 0.6));
+      animation: heartPop 2.8s cubic-bezier(.18, .9, .2, 1) forwards;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 92px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .heart::before {
+      top: -46px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 46px;
+      top: 0;
+    }
+
+    .headline {
+      position: absolute;
+      top: clamp(76px, 12svh, 112px);
+      left: 24px;
+      right: 24px;
+      color: var(--white);
+      text-align: center;
+      font-size: clamp(23px, 6vw, 30px);
+      line-height: 1.24;
+      font-weight: 800;
+      letter-spacing: 0;
+      z-index: 3;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: headlineIn 1.2s ease 2.65s forwards, headlineBreathe 4s ease-in-out 4.1s infinite;
+      text-shadow:
+        0 2px 18px rgba(255, 255, 255, 0.15),
+        0 0 28px rgba(255, 111, 173, 0.18);
+    }
+
+    .line {
+      display: block;
+      overflow: hidden;
+    }
+
+    .word {
+      display: inline-block;
+      opacity: 0;
+      color: transparent;
+      background: linear-gradient(100deg, #fff, #ffd7eb 40%, #d9b8ff 72%, #fff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      transform: translateY(18px) scale(0.96);
+      animation: wordReveal 720ms cubic-bezier(.18, .9, .22, 1) forwards;
+      text-shadow: none;
+    }
+
+    .line:nth-child(1) .word:nth-child(1) { animation-delay: 2.85s; }
+    .line:nth-child(1) .word:nth-child(2) { animation-delay: 3s; }
+    .line:nth-child(1) .word:nth-child(3) { animation-delay: 3.15s; }
+    .line:nth-child(2) .word:nth-child(1) { animation-delay: 3.38s; }
+    .line:nth-child(2) .word:nth-child(2) { animation-delay: 3.53s; }
+    .line:nth-child(2) .word:nth-child(3) { animation-delay: 3.68s; }
+    .line:nth-child(2) .word:nth-child(4) { animation-delay: 3.83s; }
+
+    .garden {
+      position: absolute;
+      left: 50%;
+      bottom: clamp(76px, 10svh, 110px);
+      width: 390px;
+      max-width: 96vw;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      display: block;
+      filter: drop-shadow(0 22px 40px rgba(0, 0, 0, 0.8));
+    }
+
+    .plant {
+      transform-box: fill-box;
+      transform-origin: 50% 96%;
+      animation: windPlant 5.6s ease-in-out 5.15s infinite;
+    }
+
+    .grass-field {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: windGrass 3.8s ease-in-out 4.4s infinite;
+    }
+
+    .stem,
+    .grass {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+      animation: draw 2.1s ease forwards;
+    }
+
+    .stem {
+      stroke: url(#stemGlow);
+      stroke-width: 5;
+      filter: drop-shadow(0 0 9px rgba(92, 255, 150, 0.58));
+      animation-delay: 3.1s;
+    }
+
+    .grass {
+      stroke: url(#grassGlow);
+      stroke-width: 4;
+      opacity: 0.94;
+      filter: drop-shadow(0 0 7px rgba(70, 255, 140, 0.48));
+      animation-delay: 3.45s;
+    }
+
+    .leaf,
+    .petal,
+    .center,
+    .fern {
+      opacity: 0;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: bloom 820ms cubic-bezier(.18, .9, .2, 1.28) forwards;
+    }
+
+    .leaf {
+      fill: url(#leafGlow);
+      filter: drop-shadow(0 0 12px rgba(138, 85, 255, 0.7));
+      animation-delay: 3.65s;
+    }
+
+    .fern {
+      fill: url(#fernGlow);
+      filter: drop-shadow(0 0 13px rgba(160, 91, 255, 0.72));
+      animation-delay: 3.8s;
+    }
+
+    .flower.one .petal,
+    .flower.one .center { animation-delay: 4.25s; }
+    .flower.two .petal,
+    .flower.two .center { animation-delay: 4.55s; }
+    .flower.three .petal,
+    .flower.three .center { animation-delay: 4.85s; }
+
+    .petal {
+      fill: url(#petalGlow);
+      stroke: rgba(255, 255, 255, 0.7);
+      stroke-width: 1.4;
+      filter:
+        drop-shadow(0 0 8px rgba(220, 188, 255, 0.72))
+        drop-shadow(0 0 22px rgba(120, 72, 255, 0.55));
+    }
+
+    .center {
+      fill: #ffe97c;
+      filter:
+        drop-shadow(0 0 8px #ffe97c)
+        drop-shadow(0 0 18px rgba(255, 149, 209, 0.86));
+      animation-name: bloom, ledPulse;
+      animation-duration: 820ms, 2.1s;
+      animation-iteration-count: 1, infinite;
+      animation-timing-function: cubic-bezier(.18, .9, .2, 1.28), ease-in-out;
+    }
+
+    .firefly {
+      position: absolute;
+      width: 4px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #fff59b;
+      box-shadow:
+        0 0 9px #fff59b,
+        0 0 20px rgba(170, 122, 255, 0.95);
+      opacity: 0;
+      animation: firefly 4.4s ease-in-out infinite;
+      z-index: 4;
+    }
+
+    .firefly:nth-child(1) { left: 44%; top: 33%; animation-delay: 4.8s; }
+    .firefly:nth-child(2) { left: 54%; top: 36%; animation-delay: 5.3s; }
+    .firefly:nth-child(3) { left: 60%; top: 42%; animation-delay: 5.7s; }
+    .firefly:nth-child(4) { left: 39%; top: 44%; animation-delay: 6.1s; }
+    .firefly:nth-child(5) { left: 50%; top: 29%; animation-delay: 6.5s; }
+    .firefly:nth-child(6) { left: 64%; top: 34%; animation-delay: 7s; }
+
+    .note {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 22px;
+      color: var(--soft);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.35;
+      opacity: 0;
+      animation: headlineIn 1.4s ease 6.8s forwards;
+      z-index: 4;
+    }
+
+    .restart {
+      position: absolute;
+      right: 16px;
+      bottom: 18px;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 7;
+      opacity: 0;
+      animation: headlineIn 1s ease 7.4s forwards;
+    }
+
+    @keyframes introOut {
+      0%, 78% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes heartPop {
+      0% {
+        opacity: 0;
+        transform: rotate(-45deg) scale(0.18);
+      }
+      18% {
+        opacity: 1;
+        transform: rotate(-45deg) scale(0.74);
+      }
+      45% {
+        opacity: 1;
+        transform: rotate(-45deg) scale(1);
+      }
+      70% {
+        opacity: 1;
+        transform: rotate(-45deg) scale(1.18);
+      }
+      100% {
+        opacity: 0;
+        transform: rotate(-45deg) scale(2.2);
+      }
+    }
+
+    @keyframes headlineIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes wordReveal {
+      0% {
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateY(18px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes headlineBreathe {
+      0%, 100% {
+        text-shadow:
+          0 2px 18px rgba(255, 255, 255, 0.16),
+          0 0 24px rgba(255, 111, 173, 0.22);
+      }
+      50% {
+        text-shadow:
+          0 2px 20px rgba(255, 255, 255, 0.24),
+          0 0 38px rgba(255, 111, 173, 0.45);
+      }
+    }
+
+    @keyframes windPlant {
+      0%, 100% { transform: rotate(0deg) translateX(0); }
+      20% { transform: rotate(1.7deg) translateX(1px); }
+      48% { transform: rotate(-1.2deg) translateX(-1px); }
+      72% { transform: rotate(1deg) translateX(0.5px); }
+    }
+
+    @keyframes windGrass {
+      0%, 100% { transform: skewX(0deg) translateX(0); }
+      28% { transform: skewX(2.8deg) translateX(2px); }
+      58% { transform: skewX(-2deg) translateX(-1px); }
+      82% { transform: skewX(1.4deg) translateX(1px); }
+    }
+
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes bloom {
+      from {
+        opacity: 0;
+        transform: scale(0.25) translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes ledPulse {
+      0%, 100% {
+        opacity: 0.65;
+        filter: drop-shadow(0 0 7px #ffe97c) drop-shadow(0 0 15px rgba(255, 149, 209, 0.68));
+      }
+      50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 14px #fff59b) drop-shadow(0 0 32px rgba(255, 149, 209, 1));
+      }
+    }
+
+    @keyframes firefly {
+      0% { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.4); }
+      20% { opacity: 1; }
+      52% { opacity: 0.45; transform: translate3d(9px, -18px, 0) scale(1); }
+      76% { opacity: 0.95; }
+      100% { opacity: 0; transform: translate3d(-8px, -35px, 0) scale(0.45); }
+    }
+
+    @keyframes rainIn {
+      to { opacity: 0.58; }
+    }
+
+    @keyframes rainFall {
+      from { transform: translate3d(-28px, -80px, 0) rotate(12deg); }
+      to { transform: translate3d(64px, 1120px, 0) rotate(12deg); }
+    }
+
+    @media (min-width: 700px) {
+      .phone {
+        border-inline: 1px solid rgba(255, 255, 255, 0.09);
+        box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
+      }
+    }
+
+    @media (max-height: 720px) {
+      .garden {
+        width: 350px;
+        bottom: 52px;
+      }
+
+      .headline {
+        top: 52px;
+        font-size: 23px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" id="scene">
+    <section class="intro" aria-label="Giriş">
+      <div class="heart" aria-hidden="true"></div>
+    </section>
+
+    <div class="rain" aria-hidden="true">
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+      <span class="drop"></span>
+    </div>
+
+    <h1 class="headline">
+      <span class="line">
+        <span class="word">Alerjin</span>
+        <span class="word">olsa</span>
+        <span class="word">da</span>
+      </span>
+      <span class="line">
+        <span class="word">en</span>
+        <span class="word">güzel</span>
+        <span class="word">çiçeklere</span>
+        <span class="word">layıksın.</span>
+      </span>
+    </h1>
+
+    <div class="garden" aria-label="Kodlanmış ledli orkide">
+      <span class="firefly" aria-hidden="true"></span>
+      <span class="firefly" aria-hidden="true"></span>
+      <span class="firefly" aria-hidden="true"></span>
+      <span class="firefly" aria-hidden="true"></span>
+      <span class="firefly" aria-hidden="true"></span>
+      <span class="firefly" aria-hidden="true"></span>
+
+      <svg viewBox="0 0 390 460" role="img" aria-labelledby="title desc">
+        <title id="title">Karanlıkta parlayan kodlanmış orkide</title>
+        <desc id="desc">Mor ışıklı çiçekler, yeşil saplar, yapraklar ve çimenler.</desc>
+        <defs>
+          <linearGradient id="stemGlow" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#3658ff" />
+            <stop offset="50%" stop-color="#7a4cff" />
+            <stop offset="100%" stop-color="#46ff8c" />
+          </linearGradient>
+
+          <linearGradient id="grassGlow" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#0f7a43" />
+            <stop offset="55%" stop-color="#4cff8e" />
+            <stop offset="100%" stop-color="#0f7a43" />
+          </linearGradient>
+
+          <radialGradient id="petalGlow" cx="44%" cy="32%" r="68%">
+            <stop offset="0%" stop-color="#fff8ff" />
+            <stop offset="42%" stop-color="#d9b8ff" />
+            <stop offset="100%" stop-color="#8b5dff" />
+          </radialGradient>
+
+          <linearGradient id="leafGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#c299ff" />
+            <stop offset="100%" stop-color="#4f22bd" />
+          </linearGradient>
+
+          <linearGradient id="fernGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#a86dff" />
+            <stop offset="100%" stop-color="#321579" />
+          </linearGradient>
+        </defs>
+
+        <g class="grass-field">
+          <path class="grass" d="M24 440 C34 372 42 331 72 291" />
+          <path class="grass" d="M48 442 C66 392 85 357 118 335" />
+          <path class="grass" d="M83 444 C82 401 91 363 119 320" />
+          <path class="grass" d="M291 442 C300 388 321 346 356 306" />
+          <path class="grass" d="M322 444 C329 394 344 361 374 330" />
+          <path class="grass" d="M357 444 C358 403 368 376 389 350" />
+          <path class="grass" d="M164 445 C151 404 139 375 112 350" />
+          <path class="grass" d="M210 445 C227 402 250 370 285 346" />
+        </g>
+
+        <g class="plant">
+          <path class="stem" d="M194 424 C190 360 199 296 199 236 C199 190 201 154 199 111" />
+          <path class="stem" d="M195 403 C170 337 146 292 108 246" />
+          <path class="stem" d="M202 404 C226 340 251 292 289 252" />
+
+          <path class="fern" d="M152 420 C116 395 94 357 90 318 C130 331 161 366 174 410Z" />
+          <path class="fern" d="M177 421 C131 417 98 404 72 374 C112 363 163 382 187 412Z" />
+          <path class="fern" d="M217 421 C257 391 276 358 279 318 C240 331 214 367 205 410Z" />
+          <path class="fern" d="M206 432 C245 425 283 407 314 378 C265 365 223 387 198 419Z" />
+
+          <path class="leaf" d="M174 319 C145 298 132 269 135 242 C166 249 189 277 190 312Z" />
+          <path class="leaf" d="M217 322 C246 301 259 273 257 246 C226 252 203 279 200 314Z" />
+          <path class="leaf" d="M182 376 C148 360 126 333 118 302 C154 303 184 331 195 368Z" />
+          <path class="leaf" d="M210 373 C246 360 270 333 281 302 C242 303 213 331 201 368Z" />
+
+          <g class="flower one" transform="translate(199 105)">
+            <ellipse class="petal" cx="0" cy="-26" rx="23" ry="31" />
+            <ellipse class="petal" cx="-30" cy="-5" rx="22" ry="30" transform="rotate(-55)" />
+            <ellipse class="petal" cx="30" cy="-5" rx="22" ry="30" transform="rotate(55)" />
+            <ellipse class="petal" cx="-16" cy="20" rx="19" ry="27" transform="rotate(34)" />
+            <ellipse class="petal" cx="16" cy="20" rx="19" ry="27" transform="rotate(-34)" />
+            <circle class="center" cx="0" cy="5" r="8" />
+          </g>
+
+          <g class="flower two" transform="translate(108 246) scale(.92)">
+            <ellipse class="petal" cx="0" cy="-26" rx="23" ry="31" />
+            <ellipse class="petal" cx="-30" cy="-5" rx="22" ry="30" transform="rotate(-55)" />
+            <ellipse class="petal" cx="30" cy="-5" rx="22" ry="30" transform="rotate(55)" />
+            <ellipse class="petal" cx="-16" cy="20" rx="19" ry="27" transform="rotate(34)" />
+            <ellipse class="petal" cx="16" cy="20" rx="19" ry="27" transform="rotate(-34)" />
+            <circle class="center" cx="0" cy="5" r="8" />
+          </g>
+
+          <g class="flower three" transform="translate(289 252) scale(.9)">
+            <ellipse class="petal" cx="0" cy="-26" rx="23" ry="31" />
+            <ellipse class="petal" cx="-30" cy="-5" rx="22" ry="30" transform="rotate(-55)" />
+            <ellipse class="petal" cx="30" cy="-5" rx="22" ry="30" transform="rotate(55)" />
+            <ellipse class="petal" cx="-16" cy="20" rx="19" ry="27" transform="rotate(34)" />
+            <ellipse class="petal" cx="16" cy="20" rx="19" ry="27" transform="rotate(-34)" />
+            <circle class="center" cx="0" cy="5" r="8" />
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <p class="note">Kokusunu değil, ışığını bıraktım.</p>
+    <button class="restart" type="button" aria-label="Animasyonu yeniden başlat">↻</button>
+    <div class="scan" aria-hidden="true"></div>
+  </main>
+
+  <script>
+    const restart = document.querySelector(".restart");
+
+    restart.addEventListener("click", () => {
+      const scene = document.querySelector("#scene");
+      const clone = scene.cloneNode(true);
+      scene.replaceWith(clone);
+      clone.querySelector(".restart").addEventListener("click", () => location.reload());
+    });
+  </script>
+</body>
+</html>
